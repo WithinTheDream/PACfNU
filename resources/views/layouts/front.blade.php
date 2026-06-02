@@ -28,41 +28,39 @@
                     </div>
                 </a>
                 
-                <div class="hidden md:flex items-center h-full">
-                    
-                    <div class="flex space-x-8 h-full items-center mr-8">
-                        <a href="{{ url('/') }}" class="text-sm font-medium transition h-full flex items-center {{ Request::is('/') ? 'text-green-600' : 'text-gray-700 hover:text-green-600' }}">Home</a>
-                        
-                        <div class="relative group h-full">
-                            <button class="text-sm font-medium transition h-full flex items-center gap-1 {{ Request::is('profil/*') ? 'text-green-600' : 'text-gray-700 hover:text-green-600' }}">
-                                Profil <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
-                            
-                            <div class="absolute left-0 top-[84px] w-56 bg-white rounded-b-lg shadow-lg py-2 hidden group-hover:block border-t-2 border-green-600 z-50">
-                                <a href="{{ url('/profil/visi-misi') }}" class="block px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition">Visi & Misi</a>
-                                <a href="{{ url('/profil/struktur') }}" class="block px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-green-600 transition">Struktur Organisasi</a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="{{ url('/') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Beranda</a>
+
+                    <div class="relative group">
+                        <button class="flex items-center gap-1 text-gray-700 hover:text-[#00923F] font-medium transition py-2">
+                            Profil
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="py-2">
+                                <a href="{{ url('/profil/visi-misi') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Visi & Misi</a>
+                                <a href="{{ url('/profil/sejarah') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Sejarah</a>
+                                <a href="{{ url('/profil/struktur') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Struktur PAC</a>
                             </div>
                         </div>
-                        
-                        <a href="{{ url('/berita') }}" class="text-sm font-medium transition h-full flex items-center {{ Request::is('berita') ? 'text-green-600' : 'text-gray-700 hover:text-green-600' }}">Berita</a>
-                        <a href="{{ url('/kontak') }}" class="text-sm font-medium transition h-full flex items-center {{ Request::is('kontak') ? 'text-green-600' : 'text-gray-700 hover:text-green-600' }}">Kontak</a>
                     </div>
 
-                    <div class="flex items-center gap-5 border-l pl-5">
-                        <button class="text-gray-600 hover:text-green-600 transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <div class="relative group">
+                        <button class="flex items-center gap-1 text-gray-700 hover:text-[#00923F] font-medium transition py-2">
+                            Lembaga
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        
-                        @auth
-                            <a href="{{ url('/admin') }}" class="bg-yellow-500 hover:bg-yellow-400 text-yellow-950 px-6 py-2 rounded text-sm font-bold transition">
-                                Dashboard
-                            </a>
-                        @else
-                            <a href="{{ url('/login') }}" class="bg-[#00923F] hover:bg-green-700 text-white px-6 py-2 rounded text-sm font-medium transition">
-                                Login
-                            </a>
-                        @endauth
+                        <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div class="py-2">
+                                <a href="{{ url('/lembaga/struktur') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Struktur Lembaga</a>
+                                <a href="{{ url('/lembaga/berita') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Berita Lembaga</a>
+                            </div>
+                        </div>
                     </div>
+
+                    <a href="{{ url('/berita') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Berita</a>
+                    <a href="{{ url('/galeri') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Galeri</a>
+                    <a href="{{ url('/kontak') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Kontak</a>
                 </div>
             </div>
         </div>

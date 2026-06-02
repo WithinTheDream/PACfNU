@@ -29,16 +29,47 @@
         </div>
     </header>
 
-    @if($article->image)
-        <div class="w-full bg-gray-50 rounded-2xl mb-10 shadow-sm border border-gray-200 flex justify-center py-6 px-4">
-            <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->title }}" class="max-w-full max-h-[700px] object-contain rounded-lg shadow-sm">
+@if($article->galleries && $article->galleries->count() > 0)
+    <div class="swiper detailSwiper mb-10 rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide w-full bg-gray-50 flex justify-center py-6 px-4">
+                <img src="{{ asset('storage/' . $article->image) }}" class="max-w-full max-h-[600px] object-contain rounded-lg">
+            </div>
+            @foreach($article->galleries as $gallery)
+                <div class="swiper-slide w-full bg-gray-50 flex justify-center py-6 px-4 relative">
+                    <img src="{{ asset('storage/' . $gallery->image_path) }}" class="max-w-full max-h-[600px] object-contain rounded-lg">
+                    @if($gallery->caption)
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm">
+                            {{ $gallery->caption }}
+                        </div>
+                    @endif
+                </div>
+            @endforeach
         </div>
-    @endif
+        <div class="swiper-button-next !text-[#00923F]"></div>
+        <div class="swiper-button-prev !text-[#00923F]"></div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+@elseif($article->image)
+    <div class="w-full bg-gray-50 rounded-2xl mb-10 shadow-sm border border-gray-200 flex justify-center py-6 px-4">
+        <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->title }}" class="max-w-full max-h-[600px] object-contain rounded-lg shadow-sm">
+    </div>
+@endif
 
     <article class="prose prose-lg prose-green max-w-none text-gray-800 leading-relaxed mb-16">
         {!! nl2br(e($article->content)) !!}
     </article>
-
+    
+    @if($article->link_dokumentasi)
+    <div class="mt-10 mb-8 p-6 bg-green-50 border border-green-100 rounded-xl text-center">
+        <h4 class="font-bold text-gray-800 mb-2">Dokumentasi Lengkap Acara</h4>
+        <p class="text-sm text-gray-600 mb-4">Lihat seluruh kumpulan foto kegiatan ini di halaman galeri kami.</p>
+        <a href="{{ $article->link_dokumentasi }}" target="_blank" class="inline-block bg-[#00923F] text-white px-6 py-2.5 rounded-lg hover:bg-green-800 font-medium transition shadow-sm">
+            Buka Album Galeri &rarr;
+        </a>
+    </div>
+@endif
     <div class="flex justify-between items-center py-6 border-t border-gray-200">
         <a href="{{ url('/berita') }}" class="flex items-center gap-2 text-[#00923F] font-semibold hover:text-green-800 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -46,4 +77,16 @@
         </a>
     </div>
 </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<script>
+    var detailSwiper = new Swiper(".detailSwiper", {
+        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        loop: true,
+    });
+</script>
 @endsection
+

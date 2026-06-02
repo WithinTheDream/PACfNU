@@ -33,7 +33,7 @@ class EventController extends Controller
         return redirect()->route('events.index')->with('success', 'Jadwal kegiatan berhasil ditambahkan!');
     }
 
-    public function edit(Event $event)
+    public function edit(Event $event)  
     {
         return view('admin.events.edit', compact('event'));
     }
