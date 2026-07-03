@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
-use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -11,61 +10,57 @@ class AdminGalleryController extends Controller
 {
     public function index()
     {
-        // Ambil data galeri beserta data artikel yang berelasi
-        $galleries = Gallery::with('article')->latest()->get();
+        // Ambil data galeri, urutkan dari yang terbaru (tidak perlu with('article') lagi)
+        $galleries = Gallery::latest()->get();
         return view('admin.galleries.index', compact('galleries'));
     }
 
     public function create()
     {
-        // Ambil artikel untuk pilihan dropdown relasi
-        $articles = Article::latest()->get();
-        return view('admin.galleries.create', compact('articles'));
+        // Langsung tampilkan view, tidak perlu passing data articles
+        return view('admin.galleries.create');
     }
 
-   public function store(Request $request)
-{
-    $request->validate([
-        'kategori' => 'required|string|max:255',
-        'images'   => 'required|array',
-        'images.*' => 'image|mimes:jpeg,png,jpg|max:2048' // Validasi per file
-    ]);
-
-    // Looping semua gambar yang diupload
-    foreach ($request->file('images') as $image) {
-        $path = $image->store('galleries', 'public');
-        
-        Gallery::create([
-            'kategori'   => $request->kategori,
-            'image_path' => $path,
+    public function store(Request $request)
+    {
+        $request->validate([
+            'kategori' => 'required|string|max:255',
+            'images'   => 'required|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048' // Validasi per file max 2MB
         ]);
-    }
 
-    return redirect()->route('galleries.index')->with('success', 'Berhasil mengupload dokumentasi!');
-}
+        // Looping semua gambar yang diupload untuk multiple upload
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('galleries', 'public');
+            
+            Gallery::create([
+                'kategori'   => $request->kategori,
+                'image_path' => $path,
+            ]);
+        }
+
+        return redirect()->route('galleries.index')->with('success', 'Berhasil mengupload dokumentasi!');
+    }
 
     public function edit(Gallery $gallery)
     {
-        $articles = Article::latest()->get();
-        return view('admin.galleries.edit', compact('gallery', 'articles'));
+        return view('admin.galleries.edit', compact('gallery'));
     }
 
     public function update(Request $request, Gallery $gallery)
     {
         $request->validate([
-            'image'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'caption'    => 'nullable|string|max:255',
-            'article_id' => 'nullable|exists:articles,id'
+            'kategori' => 'required|string|max:255',
+            'image'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
-            'caption'    => $request->caption,
-            'article_id' => $request->article_id,
+            'kategori' => $request->kategori,
         ];
 
-        // Jika user mengupload gambar baru
+        // Jika user mengupload gambar baru untuk mengganti yang lama
         if ($request->hasFile('image')) {
-            // Hapus gambar lama dari storage
+            // Hapus gambar lama dari storage fisik
             if (Storage::disk('public')->exists($gallery->image_path)) {
                 Storage::disk('public')->delete($gallery->image_path);
             }

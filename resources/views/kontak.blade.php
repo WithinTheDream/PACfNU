@@ -2,12 +2,17 @@
 @section('title', 'Hubungi Kami')
 
 @section('content')
-<div class="bg-[#EFFFF5] py-16 text-center border-b border-green-100">
-    <h1 class="text-3xl md:text-4xl font-extrabold text-[#00923F]">Hubungi Kami</h1>
-    <p class="mt-3 text-gray-600 max-w-2xl mx-auto text-lg">Punya pertanyaan atau ingin berkolaborasi? Kami siap mendengarkan.</p>
+<!-- Header Elegan -->
+<div class="pt-16 pb-10 text-center px-4">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-[#00923F] text-sm font-bold mb-4 border border-green-200 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        Layanan Informasi
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Hubungi <span class="text-[#00923F]">Kami</span></h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Punya pertanyaan atau ingin berkolaborasi? Kami siap mendengarkan dan bersinergi bersama.</p>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-24">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
         <div>

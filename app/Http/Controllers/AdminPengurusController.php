@@ -7,11 +7,15 @@ use Illuminate\Http\Request;
 
 class AdminPengurusController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Menampilkan semua data pengurus, diurutkan dari yang terbaru
-        $pengurus = Pengurus::latest()->get();
-        return view('admin.pengurus.index', compact('pengurus'));
+        // Ambil parameter dari URL, jika kosong default-nya adalah 'PAC'
+        $kategori = $request->query('kategori', 'PAC'); 
+        
+        // Tarik data dari database HANYA yang sesuai dengan kategorinya
+        $pengurus = Pengurus::where('kategori', $kategori)->latest()->get();
+        
+        return view('admin.pengurus.index', compact('pengurus', 'kategori'));
     }
 
     public function create()

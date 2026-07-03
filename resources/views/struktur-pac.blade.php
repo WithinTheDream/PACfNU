@@ -3,27 +3,30 @@
 
 @section('content')
 @php
-    // Kelompokkan pengurus inti berdasarkan kata kunci jabatan
     $penasehat = $pengurusPacInti->filter(fn($p) => str_contains(strtolower($p->jabatan), 'penasehat') || str_contains(strtolower($p->jabatan), 'pembina') || str_contains(strtolower($p->jabatan), 'dewan kehormatan'));
     $ketua = $pengurusPacInti->filter(fn($p) => str_contains(strtolower($p->jabatan), 'ketua'));
     $sekretaris = $pengurusPacInti->filter(fn($p) => str_contains(strtolower($p->jabatan), 'sekretaris'));
     $bendahara = $pengurusPacInti->filter(fn($p) => str_contains(strtolower($p->jabatan), 'bendahara'));
 @endphp
 
-<div class="bg-[#EFFFF5] py-16 text-center border-b border-green-100">
-    <h1 class="text-3xl font-extrabold text-[#00923F] uppercase tracking-wide">Pimpinan Anak Cabang</h1>
-    <h2 class="text-xl font-bold text-gray-700 mt-2">Fatayat Nahdlatul Ulama Tahunan</h2>
-    <p class="mt-3 text-gray-600 font-medium">Masa Khidmat 2026 - 2030</p>
+<!-- Header Elegan -->
+<div class="pt-16 pb-10 text-center px-4">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-[#00923F] text-sm font-bold mb-4 border border-green-200 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        Struktur Organisasi
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Pimpinan <span class="text-[#00923F]">Anak Cabang</span></h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Susunan pengurus PAC Fatayat Nahdlatul Ulama Tahunan Masa Khidmat 2026 - 2030.</p>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 py-16">
+<div class="max-w-7xl mx-auto px-4 py-8 pb-20">
 
     @if($penasehat->count() > 0)
     <div class="mb-12">
         <h3 class="text-center font-bold text-gray-500 mb-6 uppercase tracking-widest text-sm">Jajaran Penasehat & Pembina</h3>
         <div class="flex flex-wrap justify-center gap-4">
             @foreach($penasehat as $p)
-                <div class="bg-white border-t-4 border-gray-400 shadow-sm rounded-lg p-4 w-64 text-center">
+                <div class="bg-white border-t-4 border-gray-400 shadow-sm rounded-xl p-4 w-64 text-center">
                     <div class="text-xs font-bold text-gray-500 uppercase mb-1">{{ $p->jabatan }}</div>
                     <div class="font-bold text-gray-800">{{ $p->nama }}</div>
                 </div>
@@ -53,7 +56,7 @@
 
         <div class="flex flex-col gap-4 mt-6">
             @foreach($sekretaris as $p)
-                <div class="bg-white border border-green-100 shadow-md rounded-xl p-5 w-72 text-center border-t-4 border-t-yellow-500">
+                <div class="bg-white border border-gray-100 shadow-md rounded-xl p-5 w-72 text-center border-t-4 border-t-yellow-500">
                     <div class="text-xs font-bold text-gray-500 uppercase mb-1">{{ $p->jabatan }}</div>
                     <div class="font-bold text-gray-800">{{ $p->nama }}</div>
                 </div>
@@ -62,7 +65,7 @@
 
         <div class="flex flex-col gap-4 mt-6">
             @foreach($bendahara as $p)
-                <div class="bg-white border border-green-100 shadow-md rounded-xl p-5 w-72 text-center border-t-4 border-t-yellow-500">
+                <div class="bg-white border border-gray-100 shadow-md rounded-xl p-5 w-72 text-center border-t-4 border-t-yellow-500">
                     <div class="text-xs font-bold text-gray-500 uppercase mb-1">{{ $p->jabatan }}</div>
                     <div class="font-bold text-gray-800">{{ $p->nama }}</div>
                 </div>
@@ -77,7 +80,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($bidangPac as $namaBidang => $anggota)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-green-300 transition">
                     <div class="bg-green-50 px-5 py-3 border-b border-green-100">
                         <h4 class="font-bold text-[#00923F] text-center">{{ $namaBidang }}</h4>
                     </div>

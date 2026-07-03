@@ -9,10 +9,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::latest()->get();
-        return view('admin.articles.index', compact('articles'));
+        // Ambil parameter dari URL, jika kosong default-nya adalah 'biasa' (PAC)
+        $jenis = $request->query('jenis', 'biasa'); 
+        
+        // Tarik data dari database HANYA yang sesuai dengan jenisnya
+        $articles = Article::where('jenis', $jenis)->latest()->get();
+        
+        // Lempar data ke view beserta variabel $jenis agar view tahu sedang di halaman apa
+        return view('admin.articles.index', compact('articles', 'jenis'));
     }
 
     public function create()

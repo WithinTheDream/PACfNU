@@ -12,9 +12,6 @@ class Gallery extends Model
     // Izinkan mass assignment
     protected $guarded = [];
 
-    // Relasi: 1 Galeri dimiliki oleh 1 Artikel (Berita)
-    public function article()
-    {
-        return $this->belongsTo(Article::class);
-    }
+    // FUNGSI RELASI ARTICLE() DIHAPUS 
+    // Karena galeri sekarang sudah mandiri berdasarkan 'kategori'
 }

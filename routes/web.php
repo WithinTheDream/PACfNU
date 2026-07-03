@@ -6,7 +6,6 @@ use App\Models\Event;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminPengurusController;
 use App\Http\Controllers\AdminGalleryController;
 
@@ -25,6 +24,7 @@ Route::get('/profil/visi-misi', function () {
 Route::get('/profil/sejarah', function () {
     return view('profil.sejarah');
 });
+
 // Rute khusus Struktur Organisasi Biasa / PAC
 Route::get('/profil/struktur', function () {
     $pengurusPacInti = App\Models\Pengurus::where('kategori', 'PAC')->whereNull('bidang')->get();
@@ -74,22 +74,20 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->m
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rute Admin Dashboard
+// 3. Rute Admin Dashboard
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/', function () {
-        return view('admin.dashboard');
+        // Hitung total data langsung dari database untuk dilempar ke Dashboard
+        $totalBerita = App\Models\Article::where('jenis', 'biasa')->count();
+        $totalAcara = App\Models\Event::where('status', 'upcoming')->count();
+        $totalPengurus = App\Models\Pengurus::count();
+        $totalGaleri = App\Models\Gallery::distinct('kategori')->count(); // Menghitung total album/kategori unik
+        
+        return view('admin.dashboard', compact('totalBerita', 'totalAcara', 'totalPengurus', 'totalGaleri'));
     });
     
     Route::resource('articles', ArticleController::class);
     Route::resource('events', EventController::class);
-    Route::resource('articles', AdminArticleController::class);
     Route::resource('pengurus', AdminPengurusController::class);
     Route::resource('galleries', AdminGalleryController::class);
-});
-
-// Rute Admin Dashboard
-Route::prefix('admin')->middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('admin.dashboard'); // Memanggil view admin/dashboard.blade.php
-    });
 });
