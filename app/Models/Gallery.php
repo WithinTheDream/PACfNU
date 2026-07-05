@@ -9,9 +9,8 @@ class Gallery extends Model
 {
     use HasFactory;
 
-    // Izinkan mass assignment
     protected $guarded = [];
-
-    // FUNGSI RELASI ARTICLE() DIHAPUS 
-    // Karena galeri sekarang sudah mandiri berdasarkan 'kategori'
+    public function album() {
+        return $this->belongsTo(Album::class);
+    }
 }

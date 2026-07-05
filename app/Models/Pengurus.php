@@ -9,9 +9,7 @@ class Pengurus extends Model
 {
     use HasFactory;
 
-    // Paksa Laravel menggunakan tabel 'pengurus', bukan 'penguruses'
     protected $table = 'pengurus'; 
     
-    // Izinkan semua kolom diisi (mass assignment)
     protected $guarded = [];
 }

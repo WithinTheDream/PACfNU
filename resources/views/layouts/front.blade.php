@@ -6,17 +6,21 @@
     <title>@yield('title') - PAC Fatayat NU Tahunan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <!-- Animasi AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- Library CSS untuk Galeri (Fancybox) dan Slider Berita (Swiper) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
-
+    
     <style> 
         body { font-family: 'Plus Jakarta Sans', sans-serif; } 
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
     </style>
+    
+    <!-- Tempat untuk memuat CSS khusus dari halaman lain -->
+    @stack('styles')
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased flex flex-col min-h-screen">
 
@@ -32,15 +36,15 @@
                     </div>
                 </a>
                 
-                <!-- Desktop Menu -->
+                <!-- Desktop Menu (Dengan Logika Active State) -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="{{ url('/') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Beranda</a>
+                    <a href="{{ url('/') }}" class="transition pb-1 {{ request()->is('/') ? 'text-[#00923F] font-extrabold border-b-2 border-[#00923F]' : 'text-gray-700 hover:text-[#00923F] font-medium' }}">Beranda</a>
 
                     <div class="relative group">
-                        <button class="flex items-center gap-1 text-gray-700 hover:text-[#00923F] font-medium transition py-2">
+                        <button class="flex items-center gap-1 transition py-2 pb-3 {{ request()->is('profil*') ? 'text-[#00923F] font-extrabold border-b-2 border-[#00923F]' : 'text-gray-700 hover:text-[#00923F] font-medium' }}">
                             Profil <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                        <div class="absolute left-0 mt-0 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="py-2">
                                 <a href="{{ url('/profil/visi-misi') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Visi & Misi</a>
                                 <a href="{{ url('/profil/sejarah') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Sejarah</a>
@@ -50,10 +54,10 @@
                     </div>
 
                     <div class="relative group">
-                        <button class="flex items-center gap-1 text-gray-700 hover:text-[#00923F] font-medium transition py-2">
+                        <button class="flex items-center gap-1 transition py-2 pb-3 {{ request()->is('lembaga*') ? 'text-[#00923F] font-extrabold border-b-2 border-[#00923F]' : 'text-gray-700 hover:text-[#00923F] font-medium' }}">
                             Lembaga <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
-                        <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                        <div class="absolute left-0 mt-0 w-48 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                             <div class="py-2">
                                 <a href="{{ url('/lembaga/struktur') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Struktur Lembaga</a>
                                 <a href="{{ url('/lembaga/berita') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-[#00923F]">Berita Lembaga</a>
@@ -61,9 +65,9 @@
                         </div>
                     </div>
 
-                    <a href="{{ url('/berita') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Berita</a>
-                    <a href="{{ url('/galeri') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Galeri</a>
-                    <a href="{{ url('/kontak') }}" class="text-gray-700 hover:text-[#00923F] font-medium transition">Kontak</a>
+                    <a href="{{ url('/berita') }}" class="transition pb-1 {{ request()->is('berita*') && !request()->is('lembaga/berita') ? 'text-[#00923F] font-extrabold border-b-2 border-[#00923F]' : 'text-gray-700 hover:text-[#00923F] font-medium' }}">Berita</a>
+                    <a href="{{ url('/galeri') }}" class="transition pb-1 {{ request()->is('galeri*') ? 'text-[#00923F] font-extrabold border-b-2 border-[#00923F]' : 'text-gray-700 hover:text-[#00923F] font-medium' }}">Galeri</a>
+                    <a href="{{ url('/kontak') }}" class="transition pb-1 {{ request()->is('kontak') ? 'text-[#00923F] font-extrabold border-b-2 border-[#00923F]' : 'text-gray-700 hover:text-[#00923F] font-medium' }}">Kontak</a>
                 </div>
 
                 <!-- Tombol Menu Mobile (Hamburger) -->
@@ -76,26 +80,30 @@
         </div>
 
         <!-- Panel Menu Mobile (Muncul saat diklik di HP) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full left-0">
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full left-0 z-50">
             <div class="px-4 pt-2 pb-6 space-y-1 overflow-y-auto max-h-[80vh]">
-                <a href="{{ url('/') }}" class="block px-3 py-3 text-base font-medium text-gray-700 border-b border-gray-50 hover:text-[#00923F]">Beranda</a>
+                
+                <a href="{{ url('/') }}" class="block px-3 py-3 text-base border-b border-gray-50 transition-colors rounded-t-lg {{ request()->is('/') ? 'text-[#00923F] font-extrabold bg-green-50' : 'font-medium text-gray-700 hover:text-[#00923F] hover:bg-gray-50' }}">Beranda</a>
                 
                 <div class="py-2 border-b border-gray-50">
                     <p class="px-3 text-xs font-bold text-gray-400 uppercase mb-2 mt-2">Profil & Struktur</p>
-                    <a href="{{ url('/profil/visi-misi') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-[#00923F]">Visi & Misi</a>
-                    <a href="{{ url('/profil/sejarah') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-[#00923F]">Sejarah</a>
-                    <a href="{{ url('/profil/struktur') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-[#00923F]">Struktur PAC</a>
+                    <a href="{{ url('/profil/visi-misi') }}" class="block px-3 py-2 text-sm transition-colors rounded-md {{ request()->is('profil/visi-misi') ? 'text-[#00923F] font-bold bg-green-50/50' : 'text-gray-600 hover:text-[#00923F] hover:bg-gray-50' }}">Visi & Misi</a>
+                    <a href="{{ url('/profil/sejarah') }}" class="block px-3 py-2 text-sm transition-colors rounded-md {{ request()->is('profil/sejarah') ? 'text-[#00923F] font-bold bg-green-50/50' : 'text-gray-600 hover:text-[#00923F] hover:bg-gray-50' }}">Sejarah</a>
+                    <a href="{{ url('/profil/struktur') }}" class="block px-3 py-2 text-sm transition-colors rounded-md {{ request()->is('profil/struktur') ? 'text-[#00923F] font-bold bg-green-50/50' : 'text-gray-600 hover:text-[#00923F] hover:bg-gray-50' }}">Struktur PAC</a>
                 </div>
 
                 <div class="py-2 border-b border-gray-50">
                     <p class="px-3 text-xs font-bold text-gray-400 uppercase mb-2 mt-2">Lembaga</p>
-                    <a href="{{ url('/lembaga/struktur') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-[#00923F]">Struktur Lembaga</a>
-                    <a href="{{ url('/lembaga/berita') }}" class="block px-3 py-2 text-sm text-gray-600 hover:text-[#00923F]">Berita Lembaga</a>
+                    <a href="{{ url('/lembaga/struktur') }}" class="block px-3 py-2 text-sm transition-colors rounded-md {{ request()->is('lembaga/struktur') ? 'text-[#00923F] font-bold bg-green-50/50' : 'text-gray-600 hover:text-[#00923F] hover:bg-gray-50' }}">Struktur Lembaga</a>
+                    <a href="{{ url('/lembaga/berita') }}" class="block px-3 py-2 text-sm transition-colors rounded-md {{ request()->is('lembaga/berita') ? 'text-[#00923F] font-bold bg-green-50/50' : 'text-gray-600 hover:text-[#00923F] hover:bg-gray-50' }}">Berita Lembaga</a>
                 </div>
 
-                <a href="{{ url('/berita') }}" class="block px-3 py-3 text-base font-medium text-gray-700 border-b border-gray-50 hover:text-[#00923F]">Berita</a>
-                <a href="{{ url('/galeri') }}" class="block px-3 py-3 text-base font-medium text-gray-700 border-b border-gray-50 hover:text-[#00923F]">Galeri</a>
-                <a href="{{ url('/kontak') }}" class="block px-3 py-3 text-base font-medium text-gray-700 hover:text-[#00923F]">Kontak</a>
+                <a href="{{ url('/berita') }}" class="block px-3 py-3 text-base border-b border-gray-50 transition-colors {{ request()->is('berita*') && !request()->is('lembaga/berita') ? 'text-[#00923F] font-extrabold bg-green-50' : 'font-medium text-gray-700 hover:text-[#00923F] hover:bg-gray-50' }}">Berita</a>
+                
+                <a href="{{ url('/galeri') }}" class="block px-3 py-3 text-base border-b border-gray-50 transition-colors {{ request()->is('galeri*') ? 'text-[#00923F] font-extrabold bg-green-50' : 'font-medium text-gray-700 hover:text-[#00923F] hover:bg-gray-50' }}">Galeri</a>
+                
+                <a href="{{ url('/kontak') }}" class="block px-3 py-3 text-base transition-colors rounded-b-lg {{ request()->is('kontak') ? 'text-[#00923F] font-extrabold bg-green-50' : 'font-medium text-gray-700 hover:text-[#00923F] hover:bg-gray-50' }}">Kontak</a>
+            
             </div>
         </div>
     </nav>
@@ -166,5 +174,20 @@
             }
         });
     </script>
+    
+    <!-- Script Animasi AOS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                once: true,       // Animasi hanya jalan sekali saat di-scroll
+                duration: 800,    // Durasi animasi (ms)
+                offset: 50,       // Jarak trigger animasi dari bawah layar
+            });
+        });
+    </script>
+    
+    <!-- Tempat untuk memuat Script khusus dari halaman lain -->
+    @stack('scripts')
 </body>
 </html>

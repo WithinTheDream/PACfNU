@@ -14,15 +14,22 @@
 
 <div class="max-w-7xl mx-auto px-4 py-8 pb-20">
 
-    @if($lembagaInti->count() > 0)
-    <div class="flex justify-center mb-16 relative">
+@if($lembagaInti->count() > 0)
+    <!-- Ubah menjadi flex-col dan items-center agar susunannya memanjang ke bawah -->
+    <div class="flex flex-col items-center gap-8 mb-16 relative">
+        
+        <!-- Ini trik magis: Garis lurus di background untuk menyambungkan semua kotak secara vertikal -->
+        @if($lembagaInti->count() > 1)
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-full bg-green-200 z-0"></div>
+        @endif
+
         @foreach($lembagaInti as $p)
+            <!-- Tambahkan z-10 agar kotaknya berada di depan garis penghubung -->
             <div class="bg-[#00923F] shadow-lg rounded-xl p-5 w-80 text-center relative z-10">
                 <div class="text-xs font-bold text-yellow-300 uppercase tracking-widest mb-1">{{ $p->jabatan }}</div>
                 <div class="text-lg font-extrabold text-white mb-1">{{ $p->nama }}</div>
             </div>
         @endforeach
-        <div class="absolute top-[100%] left-1/2 -translate-x-1/2 w-1 h-12 bg-green-200"></div>
     </div>
     @endif
 

@@ -3,91 +3,117 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Models\Event;
+use App\Models\Pengurus;
+use App\Models\Album;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AdminPengurusController;
 use App\Http\Controllers\AdminGalleryController;
+use App\Http\Controllers\AdminAlbumController; // Tambahan Controller Baru
 
-// 1. Rute Frontend (Public)
+// ==========================================
+// 1. RUTE FRONTEND (PUBLIK)
+// ==========================================
 Route::get('/', function () {
-    $articles = App\Models\Article::where('status', 'published')->latest()->take(6)->get();
-    $events = App\Models\Event::where('status', 'upcoming')->orderBy('event_date', 'asc')->take(3)->get();
+    // 1. Ambil data berita terbaru
+    $articles = \App\Models\Article::where('status', 'published')->latest()->take(6)->get();
     
-    return view('welcome', compact('articles', 'events'));
+    // 2. Ambil data acara terbaru
+    $events = \App\Models\Event::where('status', 'upcoming')->orderBy('event_date', 'asc')->take(3)->get();
+    
+    // 3. Ambil 4 album galeri terbaru (INI YANG KEMARIN KETINGGALAN)
+    $albums = \App\Models\Album::with('galleries')->latest()->take(4)->get();
+    
+    // 4. Lempar KETIGA data tersebut ke view 'welcome'
+    return view('welcome', compact('articles', 'events', 'albums'));
 });
 
-// profil
-Route::get('/profil/visi-misi', function () {
-    return view('profil.visi-misi');
-});
-Route::get('/profil/sejarah', function () {
-    return view('profil.sejarah');
-});
+// --- Profil ---
+Route::get('/profil/visi-misi', function () { return view('profil.visi-misi'); });
+Route::get('/profil/sejarah', function () { return view('profil.sejarah'); });
 
-// Rute khusus Struktur Organisasi Biasa / PAC
+// --- Struktur PAC & Lembaga ---
 Route::get('/profil/struktur', function () {
-    $pengurusPacInti = App\Models\Pengurus::where('kategori', 'PAC')->whereNull('bidang')->get();
-    $bidangPac = App\Models\Pengurus::where('kategori', 'PAC')->whereNotNull('bidang')->get()->groupBy('bidang');
+    $pengurusPacInti = Pengurus::where('kategori', 'PAC')->whereNull('bidang')->orderBy('position', 'asc')->get();
+    $bidangPac = Pengurus::where('kategori', 'PAC')->whereNotNull('bidang')->orderBy('position', 'asc')->get()->groupBy('bidang');
     return view('struktur-pac', compact('pengurusPacInti', 'bidangPac'));
 });
 
-// lembaga
 Route::get('/lembaga/struktur', function () {
-    // Ambil penanggungjawab (yang bidangnya kosong)
-    $lembagaInti = App\Models\Pengurus::where('kategori', 'Lembaga')->whereNull('bidang')->get();
-    // Ambil daftar lembaganya
-    $pengurusLembaga = App\Models\Pengurus::where('kategori', 'Lembaga')->whereNotNull('bidang')->get()->groupBy('bidang');
-    
+    $lembagaInti = Pengurus::where('kategori', 'Lembaga')->whereNull('bidang')->orderBy('position', 'asc')->get();
+    $pengurusLembaga = Pengurus::where('kategori', 'Lembaga')->whereNotNull('bidang')->orderBy('position', 'asc')->get()->groupBy('bidang');
     return view('struktur-lembaga', compact('lembagaInti', 'pengurusLembaga'));
 });
 
-// Rute khusus Berita Lembaga
+// --- Berita, Galeri & Kontak ---
 Route::get('/lembaga/berita', function () {
-    $articles = App\Models\Article::where('status', 'published')->where('jenis', 'lembaga')->latest()->get();
+    $articles = Article::where('status', 'published')->where('jenis', 'lembaga')->latest()->get();
     return view('berita-lembaga', compact('articles'));
 });
 
-Route::get('/galeri', function () {
-    // Kelompokkan semua gambar berdasarkan kategori
-    $galleriesGrouped = App\Models\Gallery::latest()->get()->groupBy('kategori');
-    return view('gallery', compact('galleriesGrouped'));
-});
-
 Route::get('/berita', function () {
-    $articles = App\Models\Article::where('status', 'published')->where('jenis', 'biasa')->latest()->get();
+    $articles = Article::where('status', 'published')->where('jenis', 'biasa')->latest()->get();
     return view('berita', compact('articles'));
 });
 
 Route::get('/berita/{slug}', function ($slug) {
-    // Cari berita berdasarkan slug-nya, kalau nggak ada langsung munculin 404
-    $article = App\Models\Article::where('slug', $slug)->where('status', 'published')->firstOrFail();
+    $article = Article::where('slug', $slug)->where('status', 'published')->firstOrFail();
     return view('berita-detail', compact('article'));
 });
 
-Route::get('/kontak', function () {
-    return view('kontak');
+Route::get('/galeri', function () {
+    $albums = Album::with('galleries')->latest()->get();
+    return view('gallery', compact('albums'));
 });
 
-// 2. Rute Authentication
+Route::get('/kontak', function () { return view('kontak'); });
+
+
+// ==========================================
+// 2. RUTE AUTENTIKASI
+// ==========================================
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// 3. Rute Admin Dashboard
+
+// ==========================================
+// 3. RUTE ADMIN DASHBOARD
+// ==========================================
 Route::prefix('admin')->middleware('auth')->group(function () {
+    
+    // --- Dashboard Utama ---
     Route::get('/', function () {
-        // Hitung total data langsung dari database untuk dilempar ke Dashboard
-        $totalBerita = App\Models\Article::where('jenis', 'biasa')->count();
-        $totalAcara = App\Models\Event::where('status', 'upcoming')->count();
-        $totalPengurus = App\Models\Pengurus::count();
-        $totalGaleri = App\Models\Gallery::distinct('kategori')->count(); // Menghitung total album/kategori unik
+        // Ini kode yang benar untuk halaman welcome, BUKAN kode dashboard
+        $articles = \App\Models\Article::where('status', 'published')->latest()->take(6)->get();
+        $events = \App\Models\Event::where('status', 'upcoming')->orderBy('event_date', 'asc')->take(3)->get();
+        $albums = \App\Models\Album::with('galleries')->latest()->take(4)->get();
         
-        return view('admin.dashboard', compact('totalBerita', 'totalAcara', 'totalPengurus', 'totalGaleri'));
+        return view('welcome', compact('articles', 'events', 'albums'));
     });
     
+    // --- Berita & Jadwal Acara ---
+    // Rute untuk hapus foto secara spesifik via AJAX
+    Route::delete('articles/{article}/delete-image', [ArticleController::class, 'deleteImage']);
     Route::resource('articles', ArticleController::class);
     Route::resource('events', EventController::class);
+    
+    // --- Pengurus ---
     Route::resource('pengurus', AdminPengurusController::class);
-    Route::resource('galleries', AdminGalleryController::class);
+    // [FIX] Menghapus "/admin" di depan agar tidak menjadi /admin/admin/pengurus/reorder
+    Route::post('pengurus/reorder', [AdminPengurusController::class, 'reorder'])->name('pengurus.reorder');
+    
+    // --- Album & Galeri Kegiatan (Sistem Baru) ---
+    // [FIX] Menghapus "/admin" di depan agar tidak menjadi /admin/admin/albums
+    Route::resource('albums', AdminAlbumController::class);
+    Route::post('albums/{album}/upload', [AdminAlbumController::class, 'uploadPhotos'])->name('albums.photos.store');
+    Route::delete('photos/{gallery}', [AdminAlbumController::class, 'destroyPhoto'])->name('photos.destroy');
+    Route::delete('albums/{album}/delete', [AdminAlbumController::class, 'destroyAlbum'])->name('albums.destroy');
+
+
+    // ==============================================================
+    // ⚠️ BARIS DI BAWAH INI TIDAK PERLU, SILAKAN DIHAPUS SENDIRI ⚠️
+    // ==============================================================
+    // Route::resource('galleries', AdminGalleryController::class);
 });

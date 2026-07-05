@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
-    public function images() { return $this->hasMany(ArticleImage::class); }
     protected $guarded = [];
+    
+    // TAMBAHKAN INI
+    protected $casts = [
+        'images' => 'array',
+    ];
 }

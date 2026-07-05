@@ -9,13 +9,31 @@ class AdminPengurusController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil parameter dari URL, jika kosong default-nya adalah 'PAC'
         $kategori = $request->query('kategori', 'PAC'); 
         
-        // Tarik data dari database HANYA yang sesuai dengan kategorinya
-        $pengurus = Pengurus::where('kategori', $kategori)->latest()->get();
+        // Tarik data pengurus dan kelompokkan otomatis berdasarkan Bidang
+        $pengurus = Pengurus::where('kategori', $kategori)
+            ->orderByRaw("COALESCE(bidang, '0_INTI') ASC") // Trik agar pengurus inti (tanpa bidang) muncul di paling atas
+            ->orderBy('position', 'asc')
+            ->get();
+
+        // Kelompokkan koleksi data
+        $groupedPengurus = $pengurus->groupBy(function($item) {
+            return $item->bidang ?: 'Pengurus Harian / Inti';
+        });
         
-        return view('admin.pengurus.index', compact('pengurus', 'kategori'));
+        return view('admin.pengurus.index', compact('groupedPengurus', 'kategori'));
+    }
+
+    // Tambahkan ini di dalam class AdminPengurusController
+    public function reorder(Request $request)
+    {
+        // Terima data urutan dari frontend
+        foreach ($request->order as $order) {
+            // Update posisi berdasarkan ID
+            \App\Models\Pengurus::where('id', $order['id'])->update(['position' => $order['position']]);
+        }
+        return response()->json(['status' => 'success']);
     }
 
     public function create()
@@ -25,40 +43,48 @@ class AdminPengurusController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'kategori' => 'required|in:PAC,Lembaga',
-            'jabatan'  => 'required|string|max:255',
-            'nama'     => 'required|string|max:255',
-            'bidang'   => 'nullable|string|max:255', // Boleh kosong untuk pengurus inti
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'kategori' => 'required|in:PAC,Lembaga'
         ]);
 
-        Pengurus::create($request->all());
+        Pengurus::create($data);
 
-        return redirect()->route('pengurus.index')->with('success', 'Data pengurus berhasil ditambahkan!');
+        // FIX: Redirect kembali ke halaman kategori yang baru saja diinput
+        return redirect()->route('pengurus.index', ['kategori' => $request->kategori])
+                         ->with('success', 'Data pengurus berhasil ditambahkan!');
     }
 
-    public function edit(Pengurus $penguru) // Laravel otomatis memotong 's', jadi $penguru
+    public function edit($id)
     {
-        return view('admin.pengurus.edit', compact('penguru'));
+        // FIX: Tarik data dari database dan kirim dengan variabel $pengurus
+        $pengurus = Pengurus::findOrFail($id);
+        
+        return view('admin.pengurus.edit', compact('pengurus'));
     }
 
-    public function update(Request $request, Pengurus $penguru)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'kategori' => 'required|in:PAC,Lembaga',
-            'jabatan'  => 'required|string|max:255',
-            'nama'     => 'required|string|max:255',
-            'bidang'   => 'nullable|string|max:255',
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'kategori' => 'required|in:PAC,Lembaga'
         ]);
 
-        $penguru->update($request->all());
+        $pengurus = Pengurus::findOrFail($id);
+        $pengurus->update($data);
 
-        return redirect()->route('pengurus.index')->with('success', 'Data pengurus berhasil diupdate!');
+        // FIX: Redirect kembali ke halaman kategori yang baru saja diedit
+        return redirect()->route('pengurus.index', ['kategori' => $request->kategori])
+                         ->with('success', 'Data pengurus berhasil diperbarui!');
     }
 
-    public function destroy(Pengurus $penguru)
+    public function destroy($id)
     {
-        $penguru->delete();
-        return redirect()->route('pengurus.index')->with('success', 'Data pengurus berhasil dihapus!');
+        $pengurus = Pengurus::findOrFail($id);
+        $pengurus->delete();
+        
+        return back()->with('success', 'Data pengurus berhasil dihapus!');
     }
 }
