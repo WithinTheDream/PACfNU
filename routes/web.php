@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request; // <-- Tambahan untuk menangkap filter
 use App\Models\Article;
 use App\Models\Event;
 use App\Models\Pengurus;
@@ -10,22 +11,15 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AdminPengurusController;
 use App\Http\Controllers\AdminGalleryController;
-use App\Http\Controllers\AdminAlbumController; // Tambahan Controller Baru
+use App\Http\Controllers\AdminAlbumController;
 
 // ==========================================
 // 1. RUTE FRONTEND (PUBLIK)
 // ==========================================
 Route::get('/', function () {
-    // 1. Ambil data berita terbaru
-    $articles = \App\Models\Article::where('status', 'published')->latest()->take(6)->get();
-    
-    // 2. Ambil data acara terbaru
-    $events = \App\Models\Event::where('status', 'upcoming')->orderBy('event_date', 'asc')->take(3)->get();
-    
-    // 3. Ambil 4 album galeri terbaru (INI YANG KEMARIN KETINGGALAN)
-    $albums = \App\Models\Album::with('galleries')->latest()->take(4)->get();
-    
-    // 4. Lempar KETIGA data tersebut ke view 'welcome'
+    $articles = Article::where('status', 'published')->latest()->take(6)->get();
+    $events = Event::where('status', 'upcoming')->orderBy('event_date', 'asc')->take(3)->get();
+    $albums = Album::with('galleries')->latest()->take(4)->get();
     return view('welcome', compact('articles', 'events', 'albums'));
 });
 
@@ -46,14 +40,49 @@ Route::get('/lembaga/struktur', function () {
     return view('struktur-lembaga', compact('lembagaInti', 'pengurusLembaga'));
 });
 
-// --- Berita, Galeri & Kontak ---
-Route::get('/lembaga/berita', function () {
-    $articles = Article::where('status', 'published')->where('jenis', 'lembaga')->latest()->get();
+// FITUR FILTER & SEARCH BERITA LEMBAGA (Baru)
+Route::get('/lembaga/berita', function (Illuminate\Http\Request $request) {
+    $query = Article::where('status', 'published')->where('jenis', 'lembaga');
+
+    // Filter Pencarian Judul
+    if ($request->has('cari') && $request->cari != '') {
+        $query->where('title', 'like', '%' . $request->cari . '%');
+    }
+    // Filter Bulan
+    if ($request->has('bulan') && $request->bulan != '') {
+        $query->whereMonth('created_at', $request->bulan);
+    }
+    // Filter Tahun
+    if ($request->has('tahun') && $request->tahun != '') {
+        $query->whereYear('created_at', $request->tahun);
+    }
+
+    // Urutkan dari terbaru, batasi 9 berita per halaman (karena 3 kolom)
+    $articles = $query->latest()->paginate(9)->withQueryString();
+    
     return view('berita-lembaga', compact('articles'));
 });
 
-Route::get('/berita', function () {
-    $articles = Article::where('status', 'published')->where('jenis', 'biasa')->latest()->get();
+// FITUR FILTER & SEARCH BERITA PAC (Diperbarui)
+Route::get('/berita', function (Request $request) {
+    $query = Article::where('status', 'published')->where('jenis', 'biasa');
+
+    // Filter Pencarian Judul
+    if ($request->has('cari') && $request->cari != '') {
+        $query->where('title', 'like', '%' . $request->cari . '%');
+    }
+    // Filter Bulan
+    if ($request->has('bulan') && $request->bulan != '') {
+        $query->whereMonth('created_at', $request->bulan);
+    }
+    // Filter Tahun
+    if ($request->has('tahun') && $request->tahun != '') {
+        $query->whereYear('created_at', $request->tahun);
+    }
+
+    // Urutkan dari terbaru, batasi 6 berita per halaman agar rapi
+    $articles = $query->latest()->paginate(6)->withQueryString();
+    
     return view('berita', compact('articles'));
 });
 
@@ -62,13 +91,22 @@ Route::get('/berita/{slug}', function ($slug) {
     return view('berita-detail', compact('article'));
 });
 
-Route::get('/galeri', function () {
-    $albums = Album::with('galleries')->latest()->get();
+// FITUR SEARCH GALERI (Cukup satu ini saja)
+Route::get('/galeri', function (Illuminate\Http\Request $request) {
+    $query = Album::with('galleries');
+    
+    // Pencarian berdasarkan nama album
+    if ($request->has('cari') && $request->cari != '') {
+        $query->where('nama_album', 'like', '%' . $request->cari . '%');
+    }
+    
+    $albums = $query->latest()->get();
     return view('gallery', compact('albums'));
 });
 
 Route::get('/kontak', function () { return view('kontak'); });
 
+Route::get('/kontak', function () { return view('kontak'); });
 
 // ==========================================
 // 2. RUTE AUTENTIKASI
@@ -77,43 +115,33 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->m
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
 // ==========================================
 // 3. RUTE ADMIN DASHBOARD
 // ==========================================
 Route::prefix('admin')->middleware('auth')->group(function () {
     
-    // --- Dashboard Utama ---
+    // --- Dashboard Utama (DIKEMBALIKAN KE KODE ASLI) ---
     Route::get('/', function () {
-        // Ini kode yang benar untuk halaman welcome, BUKAN kode dashboard
-        $articles = \App\Models\Article::where('status', 'published')->latest()->take(6)->get();
-        $events = \App\Models\Event::where('status', 'upcoming')->orderBy('event_date', 'asc')->take(3)->get();
-        $albums = \App\Models\Album::with('galleries')->latest()->take(4)->get();
+        $totalBerita = Article::where('jenis', 'biasa')->count();
+        $totalAcara = Event::where('status', 'upcoming')->count();
+        $totalPengurus = Pengurus::count();
+        $totalGaleri = Album::count(); 
         
-        return view('welcome', compact('articles', 'events', 'albums'));
+        return view('admin.dashboard', compact('totalBerita', 'totalAcara', 'totalPengurus', 'totalGaleri'));
     });
     
     // --- Berita & Jadwal Acara ---
-    // Rute untuk hapus foto secara spesifik via AJAX
     Route::delete('articles/{article}/delete-image', [ArticleController::class, 'deleteImage']);
     Route::resource('articles', ArticleController::class);
     Route::resource('events', EventController::class);
     
     // --- Pengurus ---
     Route::resource('pengurus', AdminPengurusController::class);
-    // [FIX] Menghapus "/admin" di depan agar tidak menjadi /admin/admin/pengurus/reorder
     Route::post('pengurus/reorder', [AdminPengurusController::class, 'reorder'])->name('pengurus.reorder');
     
-    // --- Album & Galeri Kegiatan (Sistem Baru) ---
-    // [FIX] Menghapus "/admin" di depan agar tidak menjadi /admin/admin/albums
+    // --- Album & Galeri Kegiatan ---
     Route::resource('albums', AdminAlbumController::class);
     Route::post('albums/{album}/upload', [AdminAlbumController::class, 'uploadPhotos'])->name('albums.photos.store');
     Route::delete('photos/{gallery}', [AdminAlbumController::class, 'destroyPhoto'])->name('photos.destroy');
     Route::delete('albums/{album}/delete', [AdminAlbumController::class, 'destroyAlbum'])->name('albums.destroy');
-
-
-    // ==============================================================
-    // ⚠️ BARIS DI BAWAH INI TIDAK PERLU, SILAKAN DIHAPUS SENDIRI ⚠️
-    // ==============================================================
-    // Route::resource('galleries', AdminGalleryController::class);
 });

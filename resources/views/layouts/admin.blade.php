@@ -118,5 +118,45 @@
     
     <!-- Stack untuk memanggil Script tambahan -->
     @stack('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Alert Sukses Otomatis (Muncul Pop-up Toast di Pojok Kanan Atas)
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            @endif
+
+            // 2. Alert Konfirmasi Hapus Otomatis (Mencegat Tombol Hapus)
+            const deleteForms = document.querySelectorAll('.form-delete');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault(); // Tahan dulu jangan langsung dihapus
+                    Swal.fire({
+                        title: 'Apakah Anda Yakin?',
+                        text: "Data yang dihapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#00923F',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Lanjutkan hapus kalau di-klik 'Ya'
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

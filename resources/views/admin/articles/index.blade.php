@@ -7,19 +7,11 @@
         <h2 class="text-xl font-bold text-gray-800">
             Daftar Berita {{ request('jenis') == 'lembaga' ? 'Lembaga' : 'Utama PAC' }}
         </h2>
-        
-        <!-- Parameter 'jenis' akan otomatis ngikut url saat tombol tambah diklik -->
         <a href="{{ route('articles.create', ['jenis' => request('jenis', 'biasa')]) }}" class="bg-[#00923F] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-green-800 transition shadow-sm flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             Tambah Berita
         </a>
     </div>
-
-    @if(session('success'))
-        <div class="bg-green-50 text-green-700 p-4 rounded-lg mb-6 border border-green-100 font-medium">
-            {{ session('success') }}
-        </div>
-    @endif
 
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -52,7 +44,9 @@
                     </td>
                     <td class="p-4 text-right space-x-3 w-32">
                         <a href="{{ route('articles.edit', $article->id) }}" class="text-blue-600 hover:text-blue-800 font-bold text-sm transition">Edit</a>
-                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus berita ini secara permanen?')">
+                        
+                        <!-- PAKAI CLASS form-delete -->
+                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="inline-block form-delete">
                             @csrf @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-700 font-bold text-sm transition">Hapus</button>
                         </form>

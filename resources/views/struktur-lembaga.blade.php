@@ -2,7 +2,7 @@
 @section('title', 'Susunan Pengurus Lembaga')
 
 @section('content')
-<!-- Header Elegan -->
+<div class="max-w-4xl mx-auto px-4 py-16" data-aos="fade-up" data-aos-duration="1000">
 <div class="pt-16 pb-10 text-center px-4">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-[#00923F] text-sm font-bold mb-4 border border-green-200 shadow-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>

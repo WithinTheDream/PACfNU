@@ -2,7 +2,7 @@
 @section('title', 'Profil Organisasi')
 
 @section('content')
-<!-- Header Elegan Baru (Tanpa Blok Hijau) -->
+<div class="max-w-4xl mx-auto px-4 py-16" data-aos="fade-up" data-aos-duration="1000">
 <div class="pt-16 pb-10 text-center px-4">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-[#00923F] text-sm font-bold mb-4 border border-green-200 shadow-sm">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
